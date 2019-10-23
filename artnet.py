@@ -16,7 +16,7 @@ class ArtNetReceiver:
             0x2000 : self.pollHandler,
             0x2100 : self.pollReplyHandler
         }
-        self.dmxPortAddress = 0
+        self.dmxPortAddress = 0x1234
         self.dmxShortName = 'pyartnet'
         self.dmxLongName = f'Python Artnet receiver on {socket.gethostname()}'
         
@@ -64,14 +64,13 @@ class ArtNetReceiver:
         ourOEM = 0
         ourUBEA = 0
         ourStatus = 0b00010000
-        ourESTA = 0x7ff0
+        ourESTA = 0xf07f # 0x7ff0
         ourNodeReport = '#0001 [0000] All is well'
         numPorts = 1
-        port0Info = 0b01000000
+        port0Info = 0b10000000
         ourMac = b'\x08\0x00jack'
         ourStatus2 = 0b00001000
-        print(f'xxxjack {repr(socket.inet_aton(ourIP))}, {type(socket.inet_aton(ourIP))}')
-        replyData = struct.pack('!4sbbhhhbbh18s64s64sh4b4b4b4b4bxxx3xx6sibb26x', 
+        replyData = struct.pack('!4sBBhhhBBH18s64s64sh4B4B4B4B4Bxxx3xx6s4sBB26x', 
             socket.inet_aton(ourIP), 
             ourPort>>8, 
             ourPort&0xff, 
@@ -89,9 +88,9 @@ class ArtNetReceiver:
             0, 0, 0, 0, # Input port status
             0, 0, 0, 0, # Output port status
             0, 0, 0, 0, # Input port addresses
-            self.dmxPortAddress & 0x7, 0, 0, 0, # Output port addresses
+            self.dmxPortAddress & 0xf, 0, 0, 0, # Output port addresses
             ourMac,
-            0, # socket.inet_aton(ourIP), # Bind IP address
+            socket.inet_aton(ourIP), # Bind IP address
             0, # Bind index
             ourStatus2
             )
