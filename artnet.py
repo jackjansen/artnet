@@ -16,7 +16,7 @@ class ArtNetReceiver:
             0x2000 : self.pollHandler,
             0x2100 : self.pollReplyHandler
         }
-        self.dmxPortAddress = 0x1234
+        self.dmxPortAddress = 0
         self.dmxShortName = 'pyartnet'
         self.dmxLongName = f'Python Artnet receiver on {socket.gethostname()}'
         
@@ -24,6 +24,7 @@ class ArtNetReceiver:
         print(msg, file=sys.stderr)
         
     def reply(self, addr, opcode, pktData):
+        addr = (addr[0], 6454)
         pkt = struct.pack('<8sh', b'Art-Net\0', opcode) + pktData
         self.sock.sendto(pkt, addr)
         
